@@ -382,7 +382,7 @@ JSON Output Format (only for developer-handled tasks):
             elif task == "current_date":
                 return self.get_current_date()
             elif task == "current_time":
-                return datetime.now().strftime("%H:%M:%S")
+                return datetime.now().strftime("%I:%M %p")
             elif task == "get_weather":
                 return self.get_weather(location)
             elif task == "get_location":
