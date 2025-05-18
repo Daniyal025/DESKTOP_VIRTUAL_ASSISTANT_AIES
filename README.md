@@ -59,3 +59,7 @@ if logic == "yes" and computer == "yes" and data == "yes":
 - Justification of chosen domain and rule creation.
 - Test results and evaluation of system performance.
 
+## 📺 Demo Video
+[![Dennis Virtual Assistant Demo](https://img.youtube.com/vi/yig4gfnE9Q8/0.jpg)](https://www.youtube.com/watch?v=yig4gfnE9Q8)
+
+[▶️ Watch Demo on YouTube](https://www.youtube.com/watch?v=yig4gfnE9Q8)
