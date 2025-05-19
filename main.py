@@ -294,7 +294,12 @@ You can directly respond to the following tasks:
 - General queries that don’t require real-time system access or dynamic data  
 
 For these, respond naturally and conversationally without referencing internal logic, code structures, or developer concepts.  
-
+If user ask to open anything on this system, you will respond with the following message:
+```json
+{
+  "response": "Please tell me which file,folder or app you want me to open."
+}
+```
 Developer-Handled Tasks (outside your control):  
 You cannot perform system-level tasks or provide real-time data (like current date/time/weather). Instead, your role is to:  
 - Extract the user’s intent  
@@ -311,12 +316,13 @@ For model handled tasks, respond naturally. For developer-handled tasks, provide
 For developer-handled tasks, return a JSON object with the following structure:
 Tasks in this category include:  
 - open_app / 
-- create_file / delete_file / open_file / close_file / read_file  
-- create_folder / delete_folder / open_folder / close_folder  
+- create_file / open_file / read_file  
+- create_folder / open_folder /
 - current_date / current_day / current_year / current_time  
 - read_pdf / read_docx  
 - play_music  
-- get_weather / get_location / check_network / open_url  
+- get_weather / get_location / get_path / open_url  
+For opening apps if user give wrong name you will assign the name that is in its .exe file inorder to run the app but donot add the extension in the json obj key "name": by analyzing on your own.
 For url decide the domain type (e.g., .com, .org, etc.) on your own.
 For files, decide the file type (e.g., .txt, .pdf, etc.) on your own.
 For developer-handled tasks, return a JSON object with the following structure:
@@ -399,6 +405,8 @@ JSON Output Format (only for developer-handled tasks):
             return f"Sorry, I encountered an error while processing your request: {str(e)}"
 
     # Implementations of all task methods with parameters
+
+    
 
     def get_path(self, name):
         try:
@@ -544,7 +552,7 @@ JSON Output Format (only for developer-handled tasks):
     
             # First try direct launch
             try:
-                if app_name.lower() == "vscode":
+                if app_name.lower() == "Visual Studio Code":
                     app_name = "Code.exe"
                 subprocess.Popen(app_name)
                 return f"Launched {app_name}"
@@ -562,36 +570,36 @@ JSON Output Format (only for developer-handled tasks):
                        search_lower in name_lower.split('_') or
                        search_lower in name_lower.split(' '))
     
-            # Search in registry for installed applications
-            try:
-                import winreg
-                registry_paths = [
-                    (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths"),
-                    (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
-                    (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths")
-                ]
+            # # Search in registry for installed applications
+            # try:
+            #     import winreg
+            #     registry_paths = [
+            #         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths"),
+            #         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+            #         (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths")
+            #     ]
                 
-                for hkey, reg_path in registry_paths:
-                    try:
-                        reg_key = winreg.OpenKey(hkey, reg_path, 0, winreg.KEY_READ)
-                        for i in range(winreg.QueryInfoKey(reg_key)[0]):
-                            try:
-                                key_name = winreg.EnumKey(reg_key, i)
-                                if is_match(key_name, app_name):
-                                    try:
-                                        app_key = winreg.OpenKey(reg_key, key_name)
-                                        path = winreg.QueryValue(app_key, None)
-                                        if path and os.path.exists(path):
-                                            subprocess.Popen(path)
-                                            return f"Launched {app_name} from registry"
-                                    except:
-                                        continue
-                            except:
-                                continue
-                    except:
-                        continue
-            except:
-                pass
+            #     for hkey, reg_path in registry_paths:
+            #         try:
+            #             reg_key = winreg.OpenKey(hkey, reg_path, 0, winreg.KEY_READ)
+            #             for i in range(winreg.QueryInfoKey(reg_key)[0]):
+            #                 try:
+            #                     key_name = winreg.EnumKey(reg_key, i)
+            #                     if is_match(key_name, app_name):
+            #                         try:
+            #                             app_key = winreg.OpenKey(reg_key, key_name)
+            #                             path = winreg.QueryValue(app_key, None)
+            #                             if path and os.path.exists(path):
+            #                                 subprocess.Popen(path)
+            #                                 return f"Launched {app_name} from registry"
+            #                         except:
+            #                             continue
+            #                 except:
+            #                     continue
+            #         except:
+            #             continue
+            # except:
+            #     pass
     
             # Search in drives if registry search failed
             for drive in drives:
@@ -811,6 +819,6 @@ if __name__ == "__main__":
 
 # obj = DennisAssistant(None)
 # # obj.open_file("Ct-22025-CCN-Lab9", "pdf")
-# response = obj.generate_response("play music ishq")
+# response = obj.generate_response("open chrome")
 # print(response)
 
