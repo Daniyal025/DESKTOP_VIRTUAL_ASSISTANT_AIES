@@ -390,7 +390,7 @@ JSON Output Format (only for developer-handled tasks):
             elif task == "current_time":
                 return datetime.now().strftime("%I:%M %p")
             elif task == "get_weather":
-                return self.get_weather(location)
+                return self.get_weather(name)
             elif task == "get_location":
                 return self.get_location()
             elif task == "close_folder":
@@ -570,36 +570,7 @@ JSON Output Format (only for developer-handled tasks):
                        search_lower in name_lower.split('_') or
                        search_lower in name_lower.split(' '))
     
-            # # Search in registry for installed applications
-            # try:
-            #     import winreg
-            #     registry_paths = [
-            #         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths"),
-            #         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
-            #         (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths")
-            #     ]
-                
-            #     for hkey, reg_path in registry_paths:
-            #         try:
-            #             reg_key = winreg.OpenKey(hkey, reg_path, 0, winreg.KEY_READ)
-            #             for i in range(winreg.QueryInfoKey(reg_key)[0]):
-            #                 try:
-            #                     key_name = winreg.EnumKey(reg_key, i)
-            #                     if is_match(key_name, app_name):
-            #                         try:
-            #                             app_key = winreg.OpenKey(reg_key, key_name)
-            #                             path = winreg.QueryValue(app_key, None)
-            #                             if path and os.path.exists(path):
-            #                                 subprocess.Popen(path)
-            #                                 return f"Launched {app_name} from registry"
-            #                         except:
-            #                             continue
-            #                 except:
-            #                     continue
-            #         except:
-            #             continue
-            # except:
-            #     pass
+           
     
             # Search in drives if registry search failed
             for drive in drives:
@@ -632,7 +603,7 @@ JSON Output Format (only for developer-handled tasks):
 
     def create_file(self, name, location=None, filetype=None):
         try:
-            path = os.path.join(location or os.getcwd(), f"{name}.{filetype}" if filetype else name)
+            path = os.path.join(location or os.getcwd(), f"{name}{filetype}" if filetype else name)
             
             with open(path, 'w') as f:
                 pass
@@ -819,6 +790,6 @@ if __name__ == "__main__":
 
 # obj = DennisAssistant(None)
 # # obj.open_file("Ct-22025-CCN-Lab9", "pdf")
-# response = obj.generate_response("open chrome")
+# response = obj.generate_response("current weather in lahore")
 # print(response)
 
