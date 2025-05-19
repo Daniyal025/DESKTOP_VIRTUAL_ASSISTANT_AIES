@@ -391,12 +391,73 @@ JSON Output Format (only for developer-handled tasks):
                 return self.close_folder(name)
             elif task == "play_music":
                 return self.play_music(name)
+            elif task == "get_path":
+                return self.get_path(name)
             else:
                 return f"I received your request to {operation} {task} '{name}', but this feature isn't implemented yet."
         except Exception as e:
             return f"Sorry, I encountered an error while processing your request: {str(e)}"
 
     # Implementations of all task methods with parameters
+
+    def get_path(self, name):
+        try:
+            # Show searching message
+            self.message_queue.put(("status", "Searching for file, please wait..."))
+            
+            found_paths = []
+            lock = threading.Lock()
+            threads = []
+    
+            def search_drive(drive, target_name):
+                drive_path = f"{drive}:\\"
+                skip_dirs = [
+                    'Windows', 
+                    'System32', 
+                    'SysWOW64', 
+                    'Program Files', 
+                    'Program Files (x86)',
+                    '$Recycle.Bin',
+                    'System Volume Information'
+                ]
+    
+                if os.path.exists(drive_path):
+                    for root, dirs, files in os.walk(drive_path, topdown=True):
+                        try:
+                            # Skip system directories
+                            dirs[:] = [d for d in dirs if not d.startswith('$') 
+                                     and d not in skip_dirs 
+                                     and not any(skip_dir in root for skip_dir in skip_dirs)]
+                            
+                            # Check files with the specific extension
+                            if target_name in files:
+                                full_path = os.path.join(root, target_name)
+                                with lock:
+                                    found_paths.append(full_path)
+                                    return  # Exit after finding first match
+                        except PermissionError:
+                            continue
+                        except Exception:
+                            continue
+    
+            # Search all available drives
+            for drive in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                if os.path.exists(f"{drive}:"):
+                    t = threading.Thread(target=search_drive, args=(drive, name))
+                    t.start()
+                    threads.append(t)
+    
+            # Wait for all searches to complete
+            for t in threads:
+                t.join()
+    
+            if found_paths:
+                return f"Found file: {found_paths[0]}"
+            else:
+                return f"Could not find file: {name}"
+    
+        except Exception as e:
+            return f"Error while trying to get path: {str(e)}"
 
     def open_file(self, name, filetype=None):
         try:
