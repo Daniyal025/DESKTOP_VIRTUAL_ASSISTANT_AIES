@@ -10,10 +10,10 @@ import tkinter as tk
 from tkinter import scrolledtext, filedialog, ttk
 import pyttsx3
 import requests
-import win32com.client as wincl
 from google import genai
 from google.genai import types
-from PIL import Image, ImageTk
+
+
 
 class DennisAssistantUI:
     def __init__(self, root):
