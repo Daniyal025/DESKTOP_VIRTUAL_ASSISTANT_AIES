@@ -279,7 +279,7 @@ class DennisAssistant:
 
     def generate_response(self, user_input):
         client = genai.Client(
-            api_key=("AIzaSyAY8iaAkR4LSfNPA8RntMPE4ZkoOWX9mRM"),
+            api_key=("Your-Api-Key"),
         )
 
         model = "gemini-2.5-flash-preview-04-17"
